@@ -17,15 +17,17 @@ public class DataSet {
     private String orgao;
     private String contato;
     private String descricao;
+    private String url;
     private YearMonth periodo_inicial;
     private YearMonth periodo_final;
 
-    public DataSet(String titulo, String tema, String orgao, String contato, String descricao, YearMonth periodo_inicial, YearMonth periodo_final){
+    public DataSet(String titulo, String tema, String orgao, String contato, String descricao, String url, YearMonth periodo_inicial, YearMonth periodo_final){
         this.titulo = titulo;
         this.tema = tema;
         this.orgao = orgao;
         this.contato = contato;
         this.descricao = descricao;
+        this.url = url;
         this.periodo_inicial = periodo_inicial;
         this.periodo_final = periodo_final;
     }

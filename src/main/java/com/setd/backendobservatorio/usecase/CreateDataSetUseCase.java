@@ -21,6 +21,7 @@ public class CreateDataSetUseCase {
             input.getOrgao(),
             input.getContato(),
             input.getDescricao(),
+            input.getUrl(),
             input.getPeriodo_inicial(),
             input.getPeriodo_final()
         );

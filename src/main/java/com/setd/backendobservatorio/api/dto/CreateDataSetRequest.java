@@ -1,14 +1,16 @@
-package com.setd.backendobservatorio.usecase.dto;
+package com.setd.backendobservatorio.api.dto;
 
 import java.time.YearMonth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @AllArgsConstructor
 @Getter@Setter
-public class CreateDataSetInput {
+@RequiredArgsConstructor
+public class CreateDataSetRequest {
     private String titulo;
     private String tema;
     private String orgao;

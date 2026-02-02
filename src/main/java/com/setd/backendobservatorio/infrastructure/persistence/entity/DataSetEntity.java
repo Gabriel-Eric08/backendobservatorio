@@ -8,9 +8,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "dataset")
+@Getter@Setter
 public class DataSetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +33,9 @@ public class DataSetEntity {
 
     @Column(nullable = false)
     private String descricao;
+
+    @Column(nullable = false)
+    private String url;
 
     @Column(nullable = false)
     private YearMonth periodo_inicial;
