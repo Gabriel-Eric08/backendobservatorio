@@ -1,8 +1,9 @@
 package com.setd.backendobservatorio.infrastructure.persistence.utils;
 
+import java.time.YearMonth;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import java.time.YearMonth;
 
 @Converter(autoApply = true)
 public class YearMonthConverter implements AttributeConverter<YearMonth, String> {

@@ -2,6 +2,8 @@ package com.setd.backendobservatorio.api.dto;
 
 import java.time.YearMonth;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,8 @@ public class CreateDataSetRequest {
     private String orgao;
     private String contato;
     private String descricao;
-    private String url;
+    @JsonFormat(pattern = "yyyy-MM")
     private YearMonth periodo_inicial;
+    @JsonFormat(pattern = "yyyy-MM")
     private YearMonth periodo_final;
 }
