@@ -29,4 +29,12 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
         jpaDataSetRepository.save(dataSetEntity);
         return dataSet;
     }
+
+    @Override
+    public DataSet getById(long id){
+        DataSetEntity dataSetEntity = jpaDataSetRepository.findById(id).orElseThrow(() -> new RuntimeException("Não encontrado!"));
+        DataSet dataSet = new DataSet(dataSetEntity.getTitulo(),dataSetEntity.getTema(),dataSetEntity.getOrgao(),dataSetEntity.getContato(),dataSetEntity.getDescricao(),dataSetEntity.getUrl(),dataSetEntity.getPeriodo_inicial(),dataSetEntity.getPeriodo_final()); 
+        return dataSet;
+        
+    }
 }
