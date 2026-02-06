@@ -2,6 +2,8 @@ package com.setd.backendobservatorio.domain.model;
 
 import java.time.YearMonth;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,9 @@ public class DataSet {
     private String contato;
     private String descricao;
     private String url;
+    @JsonFormat(pattern = "yyyy-MM")
     private YearMonth periodo_inicial;
+    @JsonFormat(pattern = "yyyy-MM")
     private YearMonth periodo_final;
 
     public DataSet(String titulo, String tema, String orgao, String contato, String descricao, String url, YearMonth periodo_inicial, YearMonth periodo_final){

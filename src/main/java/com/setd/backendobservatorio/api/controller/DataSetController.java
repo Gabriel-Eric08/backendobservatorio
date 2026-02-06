@@ -3,9 +3,11 @@ package com.setd.backendobservatorio.api.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -19,9 +21,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.setd.backendobservatorio.api.dto.CreateDataSetRequest;
 import com.setd.backendobservatorio.api.mapper.DataSetApiMapper;
 import com.setd.backendobservatorio.config.FileStorageProperties;
+import com.setd.backendobservatorio.domain.model.DataSet;
 import com.setd.backendobservatorio.infrastructure.persistence.utils.YearMonthConverter;
 import com.setd.backendobservatorio.usecase.CreateDataSetUseCase;
-
+import com.setd.backendobservatorio.usecase.FindAllDataSetUseCase;
 
 @RestController
 @RequestMapping("/dataset")
@@ -30,10 +33,12 @@ public class DataSetController {
     // Config pra o usecase e o caminho para salvar os csvs do balacobaco
     private final CreateDataSetUseCase createDataSetUseCase;
     private final Path fileStorageLocation;
+    private final FindAllDataSetUseCase findAllDataSetUseCase;
     
-    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties){
+    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase){
         this.createDataSetUseCase=createDataSetUseCase;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
+        this.findAllDataSetUseCase = findAllDataSetUseCase;
     }
 
     // Anotação para receber multipart/form-data (Receber arquivo e json juntos, no postman não pra colocar um campo "file" e outro "data" com o json)
@@ -44,6 +49,7 @@ public class DataSetController {
         System.out.println("DATA JSON RECEBIDO:");
         System.out.println(dataJson);
 
+        
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -71,6 +77,21 @@ public class DataSetController {
             }
         } catch (IOException e) {
             throw new RuntimeException("Erro ao salvar o arquivo", e);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<String> findAll(){
+        List<DataSet> dataSets = findAllDataSetUseCase.findAll();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        try {
+            String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dataSets);
+            return ResponseEntity.ok(jsonResult);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Erro ao serializar os dados");
         }
     }
 }
