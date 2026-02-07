@@ -35,4 +35,15 @@ public class DataSet {
         this.periodo_inicial = periodo_inicial;
         this.periodo_final = periodo_final;
     }
+
+     public boolean isEmpty() {
+        return (titulo == null || titulo.isBlank())
+            && (tema == null || tema.isBlank())
+            && (orgao == null || orgao.isBlank())
+            && (contato == null || contato.isBlank())
+            && (descricao == null || descricao.isBlank())
+            && (url == null || url.isBlank())
+            && (periodo_inicial == null)
+            && (periodo_final == null);
+    }
 }
