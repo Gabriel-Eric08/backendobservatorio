@@ -25,11 +25,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.setd.backendobservatorio.api.dto.CreateDataSetRequest;
 import com.setd.backendobservatorio.api.mapper.DataSetApiMapper;
 import com.setd.backendobservatorio.config.FileStorageProperties;
+import com.setd.backendobservatorio.domain.model.DataSet;
 import com.setd.backendobservatorio.infrastructure.persistence.utils.YearMonthConverter;
 import com.setd.backendobservatorio.usecase.CreateDataSetUseCase;
-import com.setd.backendobservatorio.domain.model.DataSet;
 import com.setd.backendobservatorio.usecase.FindAllDataSetUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetByIdUseCase;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -76,31 +77,16 @@ public class DataSetController {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("Arquivo vazio");
-            }else if(!file.getOriginalFilename().toLowerCase().endsWith(".csv")){
+            }
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !originalFilename.toLowerCase().endsWith(".csv")){
                 return ResponseEntity.badRequest().body("Tipo de arquivo inválido. Apenas arquivos CSV são permitidos.");
             }
-            else{
-                file.transferTo(target);
-                createDataSetUseCase.save((DataSetApiMapper.toInput(request, target.toString())));
-                return ResponseEntity.ok("DataSet registrado com sucesso!");
-            }
+            file.transferTo(target);
+            createDataSetUseCase.save((DataSetApiMapper.toInput(request, target.toString())));
+            return ResponseEntity.ok("DataSet registrado com sucesso!");
         } catch (IOException e) {
             throw new RuntimeException("Erro ao salvar o arquivo", e);
-        }
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<String> findAll(){
-        List<DataSet> dataSets = findAllDataSetUseCase.findAll();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        try {
-            String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dataSets);
-            return ResponseEntity.ok(jsonResult);
-        } catch (JsonProcessingException e) {
-            return ResponseEntity.badRequest().body("Erro ao serializar os dados");
         }
     }
 
@@ -119,7 +105,7 @@ public class DataSetController {
                 return ResponseEntity.badRequest().build();
         }
         }
-        @GetMapping("/all")
+    @GetMapping("/all")
     public ResponseEntity<String> findAll(){
         List<DataSet> dataSets = findAllDataSetUseCase.findAll();
         ObjectMapper mapper = new ObjectMapper();
