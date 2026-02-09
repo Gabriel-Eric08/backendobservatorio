@@ -23,13 +23,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.setd.backendobservatorio.api.dto.CreateDataSetRequest;
+import com.setd.backendobservatorio.api.dto.DataSetJsonResponse;
 import com.setd.backendobservatorio.api.mapper.DataSetApiMapper;
+import com.setd.backendobservatorio.api.mapper.DataSetTableApiMapper;
 import com.setd.backendobservatorio.config.FileStorageProperties;
 import com.setd.backendobservatorio.domain.model.DataSet;
+import com.setd.backendobservatorio.domain.model.DataSetTable;
 import com.setd.backendobservatorio.infrastructure.persistence.utils.YearMonthConverter;
 import com.setd.backendobservatorio.usecase.CreateDataSetUseCase;
 import com.setd.backendobservatorio.usecase.FindAllDataSetUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetByIdUseCase;
+import com.setd.backendobservatorio.usecase.GetDataSetJson;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -43,12 +47,14 @@ public class DataSetController {
     private final GetDataSetByIdUseCase getDataSetByIdUseCase;
     private final Path fileStorageLocation;
     private final FindAllDataSetUseCase findAllDataSetUseCase;
-    
-    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase){
+    private final GetDataSetJson getDataSetJson;
+
+    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase, GetDataSetJson getDataSetJson){
         this.createDataSetUseCase=createDataSetUseCase;
         this.getDataSetByIdUseCase = getDataSetByIdUseCase;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         this.findAllDataSetUseCase = findAllDataSetUseCase;
+        this.getDataSetJson = getDataSetJson;
     }
 
     // Anotação para receber multipart/form-data (Receber arquivo e json juntos, no postman não pra colocar um campo "file" e outro "data" com o json)
@@ -118,5 +124,13 @@ public class DataSetController {
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().body("Erro ao serializar os dados");
         }
+        }
+        @GetMapping("/test/{id}")
+        public ResponseEntity<DataSetJsonResponse> test(@PathVariable long id){
+            DataSet dataSet = getDataSetByIdUseCase.getById(id);
+            String path = dataSet.getUrl();
+            DataSetTable table = getDataSetJson.convert(path);
+            DataSetJsonResponse response = DataSetTableApiMapper.dataSetTableConvert(dataSet, table);
+            return ResponseEntity.ok(response);
     }
     }
