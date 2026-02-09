@@ -3,6 +3,7 @@ package com.setd.backendobservatorio.usecase;
 import org.springframework.stereotype.Service;
 
 import com.setd.backendobservatorio.domain.model.DataSet;
+import com.setd.backendobservatorio.domain.model.StatusEnum;
 import com.setd.backendobservatorio.domain.repository.DataSetRepository;
 import com.setd.backendobservatorio.usecase.dto.CreateDataSetInput;
 
@@ -23,7 +24,8 @@ public class CreateDataSetUseCase {
             input.getDescricao(),
             input.getUrl(),
             input.getPeriodo_inicial(),
-            input.getPeriodo_final()
+            input.getPeriodo_final(),
+            StatusEnum.PENDENTE
         );
         dataSetRepository.save(dataSet);
         return dataSet;

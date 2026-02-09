@@ -2,6 +2,8 @@ package com.setd.backendobservatorio.infrastructure.persistence.entity;
 
 import java.time.YearMonth;
 
+import com.setd.backendobservatorio.domain.model.StatusEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,4 +44,7 @@ public class DataSetEntity {
 
     @Column(nullable = false)
     private YearMonth periodo_final;
+
+    @Column(nullable = false)
+    private StatusEnum status;
 }

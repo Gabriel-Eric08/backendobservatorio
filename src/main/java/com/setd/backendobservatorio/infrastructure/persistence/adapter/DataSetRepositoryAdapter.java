@@ -29,6 +29,7 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
         dataSetEntity.setUrl(dataSet.getUrl());
         dataSetEntity.setPeriodo_inicial(dataSet.getPeriodo_inicial());
         dataSetEntity.setPeriodo_final(dataSet.getPeriodo_final());
+        dataSetEntity.setStatus(dataSet.getStatus());
         jpaDataSetRepository.save(dataSetEntity);
         return dataSet;
     }
@@ -47,6 +48,7 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
             dataSet.setUrl(entity.getUrl());
             dataSet.setPeriodo_inicial(entity.getPeriodo_inicial());
             dataSet.setPeriodo_final(entity.getPeriodo_final());
+            dataSet.setStatus(entity.getStatus());
             return dataSet;
         }).toList();
         return dataSets;
@@ -55,7 +57,7 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
     @Override
     public DataSet getById(long id){
         DataSetEntity dataSetEntity = jpaDataSetRepository.findById(id).orElseThrow(() -> new RuntimeException("Não encontrado!"));
-        DataSet dataSet = new DataSet(dataSetEntity.getTitulo(),dataSetEntity.getTema(),dataSetEntity.getOrgao(),dataSetEntity.getContato(),dataSetEntity.getDescricao(),dataSetEntity.getUrl(),dataSetEntity.getPeriodo_inicial(),dataSetEntity.getPeriodo_final()); 
+        DataSet dataSet = new DataSet(dataSetEntity.getTitulo(),dataSetEntity.getTema(),dataSetEntity.getOrgao(),dataSetEntity.getContato(),dataSetEntity.getDescricao(),dataSetEntity.getUrl(),dataSetEntity.getPeriodo_inicial(),dataSetEntity.getPeriodo_final(),dataSetEntity.getStatus()); 
         return dataSet;
         
     }

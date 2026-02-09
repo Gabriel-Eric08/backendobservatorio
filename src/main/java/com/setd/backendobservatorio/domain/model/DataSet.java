@@ -24,8 +24,9 @@ public class DataSet {
     private YearMonth periodo_inicial;
     @JsonFormat(pattern = "yyyy-MM")
     private YearMonth periodo_final;
+    private StatusEnum status;
 
-    public DataSet(String titulo, String tema, String orgao, String contato, String descricao, String url, YearMonth periodo_inicial, YearMonth periodo_final){
+    public DataSet(String titulo, String tema, String orgao, String contato, String descricao, String url, YearMonth periodo_inicial, YearMonth periodo_final, StatusEnum status){
         this.titulo = titulo;
         this.tema = tema;
         this.orgao = orgao;
@@ -34,6 +35,7 @@ public class DataSet {
         this.url = url;
         this.periodo_inicial = periodo_inicial;
         this.periodo_final = periodo_final;
+        this.status = status;
     }
 
      public boolean isEmpty() {
