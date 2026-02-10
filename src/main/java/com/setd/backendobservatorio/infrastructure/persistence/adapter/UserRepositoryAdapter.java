@@ -26,4 +26,9 @@ public class UserRepositoryAdapter implements  UserRepository {
         jpaUserRepository.save(userEntity);
         return user;
     }
+
+    @Override
+    public boolean existsByNome(String nome){
+        return jpaUserRepository.existsByNome(nome);
+    }
 }
