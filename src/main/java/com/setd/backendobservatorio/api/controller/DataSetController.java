@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.setd.backendobservatorio.api.dto.ChangeStatusRequest;
 import com.setd.backendobservatorio.api.dto.CreateDataSetRequest;
 import com.setd.backendobservatorio.api.dto.DataSetJsonResponse;
 import com.setd.backendobservatorio.api.mapper.DataSetApiMapper;
@@ -29,11 +31,15 @@ import com.setd.backendobservatorio.api.mapper.DataSetTableApiMapper;
 import com.setd.backendobservatorio.config.FileStorageProperties;
 import com.setd.backendobservatorio.domain.model.DataSet;
 import com.setd.backendobservatorio.domain.model.DataSetTable;
+import com.setd.backendobservatorio.domain.model.User;
 import com.setd.backendobservatorio.infrastructure.persistence.utils.YearMonthConverter;
+import com.setd.backendobservatorio.usecase.AproveDataSetUseCase;
 import com.setd.backendobservatorio.usecase.CreateDataSetUseCase;
+import com.setd.backendobservatorio.usecase.ExistsByNomeUseCase;
 import com.setd.backendobservatorio.usecase.FindAllDataSetUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetByIdUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetJson;
+import com.setd.backendobservatorio.usecase.LoginUseCase;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -48,13 +54,19 @@ public class DataSetController {
     private final Path fileStorageLocation;
     private final FindAllDataSetUseCase findAllDataSetUseCase;
     private final GetDataSetJson getDataSetJson;
+    private final AproveDataSetUseCase aproveDataSetUseCase;
+    private final ExistsByNomeUseCase existsByNomeUseCase;
+    private final LoginUseCase loginUseCase;
 
-    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase, GetDataSetJson getDataSetJson){
+    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase, GetDataSetJson getDataSetJson, AproveDataSetUseCase aproveDataSetUseCase, ExistsByNomeUseCase existsByNomeUseCase, LoginUseCase loginUseCase){
         this.createDataSetUseCase=createDataSetUseCase;
         this.getDataSetByIdUseCase = getDataSetByIdUseCase;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         this.findAllDataSetUseCase = findAllDataSetUseCase;
         this.getDataSetJson = getDataSetJson;
+        this.aproveDataSetUseCase = aproveDataSetUseCase;
+        this.existsByNomeUseCase = existsByNomeUseCase;
+        this.loginUseCase = loginUseCase;
     }
 
     // Anotação para receber multipart/form-data (Receber arquivo e json juntos, no postman não pra colocar um campo "file" e outro "data" com o json)
@@ -132,5 +144,36 @@ public class DataSetController {
             DataSetTable table = getDataSetJson.convert(path);
             DataSetJsonResponse response = DataSetTableApiMapper.dataSetTableConvert(dataSet, table);
             return ResponseEntity.ok(response);
-    }
+        }
+
+        @PostMapping("/aprove")
+        public ResponseEntity<String> aprove(@RequestBody ChangeStatusRequest request){
+            String res;
+            String nome = request.getNome();
+            
+            // Check if user exists by nome
+            boolean exists = existsByNomeUseCase.existsByNome(nome);
+            if(!exists){
+                return ResponseEntity.status(400).body("Usuário " + nome + " não existe");
+            }
+            
+            // Login with nome and senha
+            User user = loginUseCase.login(request.getNome(), request.getSenha());
+            if(user == null){
+                return ResponseEntity.status(401).body("Nome ou senha incorretos");
+            }
+            
+            // Check if user is admin
+            if(user.getRoleId() != 1){
+                return ResponseEntity.status(403).body("Usuário não tem permissão de administrador para aprovar DataSets");
+            }
+            
+            // Approve dataset
+            boolean aproveResult = aproveDataSetUseCase.aprove(request.getId());
+            if(aproveResult){
+                return ResponseEntity.ok("DataSet ID " + request.getId() + " foi aprovado com sucesso!");
+            } else {
+                return ResponseEntity.status(400).body("Falha ao aprovar o DataSet com ID " + request.getId());
+            }
+        }
     }

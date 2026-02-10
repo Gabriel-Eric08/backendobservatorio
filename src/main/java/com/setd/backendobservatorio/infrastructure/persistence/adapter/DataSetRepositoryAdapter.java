@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.setd.backendobservatorio.domain.model.DataSet;
+import com.setd.backendobservatorio.domain.model.StatusEnum;
 import com.setd.backendobservatorio.domain.repository.DataSetRepository;
 import com.setd.backendobservatorio.infrastructure.persistence.entity.DataSetEntity;
 import com.setd.backendobservatorio.infrastructure.persistence.repository.JpaDataSetRepository;
@@ -60,5 +61,13 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
         DataSet dataSet = new DataSet(dataSetEntity.getTitulo(),dataSetEntity.getTema(),dataSetEntity.getOrgao(),dataSetEntity.getContato(),dataSetEntity.getDescricao(),dataSetEntity.getUrl(),dataSetEntity.getPeriodo_inicial(),dataSetEntity.getPeriodo_final(),dataSetEntity.getStatus()); 
         return dataSet;
         
+    }
+    @Override
+    public boolean aprove(long id){
+        return jpaDataSetRepository.findById(id).map(dataSet ->{
+            dataSet.setStatus(StatusEnum.APROVADO);
+            jpaDataSetRepository.save(dataSet);
+            return true;
+        }).orElse(false);
     }
 }

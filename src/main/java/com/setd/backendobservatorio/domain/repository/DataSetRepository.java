@@ -7,4 +7,5 @@ public interface DataSetRepository {
     DataSet save(DataSet dataSet);
     List<DataSet> findAll();
     DataSet getById(long id);
+    boolean aprove(long id);
 }

@@ -10,4 +10,6 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class ChangeStatusRequest {
     String nome;
+    String senha;
+    long id;
 }

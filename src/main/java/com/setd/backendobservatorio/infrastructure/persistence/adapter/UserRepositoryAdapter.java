@@ -31,4 +31,18 @@ public class UserRepositoryAdapter implements  UserRepository {
     public boolean existsByNome(String nome){
         return jpaUserRepository.existsByNome(nome);
     }
+
+    @Override
+    public User findByNomeAndSenha(String nome, String senha){
+        UserEntity userEntity = jpaUserRepository.findByNomeAndSenha(nome,senha);
+        if(userEntity == null){
+            return null;
+        }
+        User user = new User();
+        user.setEmail(userEntity.getEmail());
+        user.setId(userEntity.getId());
+        user.setNome(userEntity.getNome());
+        user.setRoleId(userEntity.getRoleId());
+        return user;
+    }
 }

@@ -6,6 +6,8 @@ import com.setd.backendobservatorio.domain.model.StatusEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,5 +48,6 @@ public class DataSetEntity {
     private YearMonth periodo_final;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusEnum status;
 }
