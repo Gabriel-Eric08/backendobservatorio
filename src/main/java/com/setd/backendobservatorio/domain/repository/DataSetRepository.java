@@ -8,4 +8,5 @@ public interface DataSetRepository {
     List<DataSet> findAll();
     DataSet getById(long id);
     boolean aprove(long id);
+    boolean reprove(long id);
 }

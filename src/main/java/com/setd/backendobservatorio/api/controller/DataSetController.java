@@ -40,6 +40,7 @@ import com.setd.backendobservatorio.usecase.FindAllDataSetUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetByIdUseCase;
 import com.setd.backendobservatorio.usecase.GetDataSetJson;
 import com.setd.backendobservatorio.usecase.LoginUseCase;
+import com.setd.backendobservatorio.usecase.ReproveDatSetUseCase;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -57,8 +58,9 @@ public class DataSetController {
     private final AproveDataSetUseCase aproveDataSetUseCase;
     private final ExistsByNomeUseCase existsByNomeUseCase;
     private final LoginUseCase loginUseCase;
+    private final ReproveDatSetUseCase reproveDatSetUseCase;
 
-    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase, GetDataSetJson getDataSetJson, AproveDataSetUseCase aproveDataSetUseCase, ExistsByNomeUseCase existsByNomeUseCase, LoginUseCase loginUseCase){
+    public DataSetController(CreateDataSetUseCase createDataSetUseCase, FileStorageProperties fileStorageProperties, FindAllDataSetUseCase findAllDataSetUseCase, GetDataSetByIdUseCase getDataSetByIdUseCase, GetDataSetJson getDataSetJson, AproveDataSetUseCase aproveDataSetUseCase, ExistsByNomeUseCase existsByNomeUseCase, LoginUseCase loginUseCase, ReproveDatSetUseCase reproveDatSetUseCase){
         this.createDataSetUseCase=createDataSetUseCase;
         this.getDataSetByIdUseCase = getDataSetByIdUseCase;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
@@ -67,6 +69,7 @@ public class DataSetController {
         this.aproveDataSetUseCase = aproveDataSetUseCase;
         this.existsByNomeUseCase = existsByNomeUseCase;
         this.loginUseCase = loginUseCase;
+        this.reproveDatSetUseCase=reproveDatSetUseCase;
     }
 
     // Anotação para receber multipart/form-data (Receber arquivo e json juntos, no postman não pra colocar um campo "file" e outro "data" com o json)
@@ -174,6 +177,36 @@ public class DataSetController {
                 return ResponseEntity.ok("DataSet ID " + request.getId() + " foi aprovado com sucesso!");
             } else {
                 return ResponseEntity.status(400).body("Falha ao aprovar o DataSet com ID " + request.getId());
+            }
+        }
+        @PostMapping("/reprove")
+        public ResponseEntity<String> reprove(@RequestBody ChangeStatusRequest request){
+            String res;
+            String nome = request.getNome();
+            
+            // Check if user exists by nome
+            boolean exists = existsByNomeUseCase.existsByNome(nome);
+            if(!exists){
+                return ResponseEntity.status(400).body("Usuário " + nome + " não existe");
+            }
+            
+            // Login with nome and senha
+            User user = loginUseCase.login(request.getNome(), request.getSenha());
+            if(user == null){
+                return ResponseEntity.status(401).body("Nome ou senha incorretos");
+            }
+            
+            // Check if user is admin
+            if(user.getRoleId() != 1){
+                return ResponseEntity.status(403).body("Usuário não tem permissão de administrador para aprovar DataSets");
+            }
+            
+            // Approve dataset
+            boolean reproveResult = reproveDatSetUseCase.reprove(request.getId());
+            if(reproveResult){
+                return ResponseEntity.ok("DataSet ID " + request.getId() + " foi reprovado com sucesso!");
+            } else {
+                return ResponseEntity.status(400).body("Falha ao reprovar o DataSet com ID " + request.getId());
             }
         }
     }

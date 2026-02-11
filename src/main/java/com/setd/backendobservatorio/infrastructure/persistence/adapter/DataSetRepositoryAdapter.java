@@ -70,4 +70,12 @@ public class DataSetRepositoryAdapter implements DataSetRepository{
             return true;
         }).orElse(false);
     }
+    @Override
+    public boolean reprove(long id){
+        return jpaDataSetRepository.findById(id).map(dataset ->{
+            dataset.setStatus(StatusEnum.REPROVADO);
+            jpaDataSetRepository.save(dataset);
+            return true;
+        }).orElse(false);
+    }
 }
