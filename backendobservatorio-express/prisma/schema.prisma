@@ -6,3 +6,35 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  name String @unique
+  email String @unique
+  password String
+  role RoleEnum
+}
+
+model dataSet {
+  id Int @id @default(autoincrement())
+  title String 
+  category String
+  department String
+  contactEmail String
+  description String?
+  fileName String 
+  init_time DateTime
+  end_time DateTime
+  status StatusEnum @default(PENDING)
+  createdAt DateTime @default(now())
+}
+
+enum RoleEnum {
+  ADMIN
+  USER
+}
+enum StatusEnum {
+  PENDING
+  APPROVED
+  REJECTED
+}
