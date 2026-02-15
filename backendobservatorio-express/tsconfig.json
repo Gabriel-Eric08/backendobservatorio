@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2020",
+    "lib": ["ES2020"],
+
+    /* Module System */
+    "module": "commonjs",
+    "moduleResolution": "node",
+
+    /* Project Structure */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Strict Type-Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Interop & Imports */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    /* Emit */
+    "sourceMap": true,
+    "removeComments": true,
+
+    /* Performance */
+    "skipLibCheck": true,
+
+    /* Types */
+    "types": ["node", "express"]
+  },
+
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
