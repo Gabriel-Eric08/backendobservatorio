@@ -5,8 +5,8 @@
     "lib": ["ES2020"],
 
     /* Module System */
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
 
     /* Project Structure */
     "rootDir": "./src",

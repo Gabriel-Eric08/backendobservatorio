@@ -1,17 +1,12 @@
 import express from 'express';
+import userRoutes from './module/user/user.routes.js';
 
 const app = express();
 const PORT = 3000;
 
-const objResp = {
-  "id": 1,
-  "name": "John Doe",
-  "email": "john.doe@example.com"
-}
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.json(objResp);
-});
+app.use("/users", userRoutes)
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
