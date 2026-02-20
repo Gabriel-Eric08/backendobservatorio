@@ -24,3 +24,30 @@ export async function createUserService(name: string, password: string, email: s
         };
     }
 }
+
+export async function getUserService(name: String, password: String) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                name: name,
+                password: password
+            }
+        })
+        if(user == null) {
+            return {
+                sucess:false,
+                user:null
+            } 
+        }
+        return {
+            sucess:true,
+            user:user
+        }
+    } catch (error) {
+        console.log(error)
+        return {
+            sucess:false,
+            user:null
+        }
+    }
+}
