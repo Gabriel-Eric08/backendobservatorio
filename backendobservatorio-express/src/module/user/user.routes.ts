@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { createUser, getUser } from "./user.controller.js";
+import { createUser, loginUser, promoteUserToAdmin } from "./user.controller.js";
 
 const userRoutes = Router();
 
 userRoutes.post("/register", createUser);
-userRoutes.post("/id", getUser)
+userRoutes.post("/login", loginUser)
+userRoutes.post("/promote", promoteUserToAdmin)
 
 export default userRoutes;
